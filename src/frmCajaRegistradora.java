@@ -17,8 +17,8 @@ public class frmCajaRegistradora extends JFrame {
     JTextField txtExistencia, txtValorDevolver;
     JTable tblDevolucion;
     JButton btnActualizar, btnDevolver;
-    String[] denominaciones = {"100000", "50000", "20000", "10000", "5000", "2000", "1000", "500", "200", "100", "50"};
-    String[] columnas = {"Cantidad", "Billete/Moneda", "Denominación"};
+    String[] denominaciones = { "100000", "50000", "20000", "10000", "5000", "2000", "1000", "500", "200", "100","50" };
+    String[] columnas = { "Cantidad", "Billete/Moneda", "Denominación" };
     int[] existencia = new int[denominaciones.length];
     DefaultTableModel modeloTabla;
 
@@ -71,7 +71,7 @@ public class frmCajaRegistradora extends JFrame {
 
     private class btnActualizarListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            MensajeAct();
+            actualizacionCan();
         }
     }
 
@@ -81,9 +81,31 @@ public class frmCajaRegistradora extends JFrame {
         }
     }
 
-    private void MensajeAct() {
-        String denominacion = (String) cbDenominacion.getSelectedItem();
-        JOptionPane.showMessageDialog(null, "La cantidad de billetes de; " + denominacion + " ha sido actualizada.");
+    private void actualizacionCan() {
+        int den = Integer.parseInt((String)cbDenominacion.getSelectedItem());
+        int cant = -1;
+        try {
+            
+            for (int i = 0; i < denominaciones.length; i++) {
+                if (Integer.parseInt(denominaciones[i]) == den) {
+                    cant = i;
+                    break;
+                }
+            }
+            if (cant != -1) {
+                int existencias = Integer.parseInt(txtExistencia.getText());
+                if (existencias > 0) {
+                    existencia[cant] += existencias;
+                    JOptionPane.showMessageDialog(null, "La cantidad de " + denominaciones[cant] + " ha sido actualizada a " + existencia[cant]);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error no se puede ingresar un numero negativo");
+                    txtExistencia.setText("");
+                }
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error ingrese un numero entero");
+            txtExistencia.setText("");
+        }
     }
 
     private void calcularDevuelta() {
@@ -93,9 +115,16 @@ public class frmCajaRegistradora extends JFrame {
 
         for (int i = 0; i < denominaciones.length; i++) {
             int denominacion = Integer.parseInt(denominaciones[i]);
-            int cantidad = valorDevolver / denominacion;
+            int cantidadDisponible = existencia[i];
+            int cantidad;
+            if (valorDevolver / denominacion < cantidadDisponible) {
+                cantidad = valorDevolver / denominacion;
+            } else {
+                cantidad = cantidadDisponible;
+            }
             if (cantidad > 0) {
                 valorDevolver -= cantidad * denominacion;
+                existencia[i] -= cantidad;
                 datos[contador][0] = String.valueOf(cantidad);
                 if (denominacion >= 1000) {
                     datos[contador][1] = "Billete";
@@ -111,7 +140,7 @@ public class frmCajaRegistradora extends JFrame {
         for (int i = 0; i < contador; i++) {
             datosFinales[i] = datos[i];
         }
-        
+
         DefaultTableModel modelo = new DefaultTableModel(datosFinales, columnas);
         tblDevolucion.setModel(modelo);
     }
