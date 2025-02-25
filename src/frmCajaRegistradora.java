@@ -85,7 +85,6 @@ public class frmCajaRegistradora extends JFrame {
         int den = Integer.parseInt((String)cbDenominacion.getSelectedItem());
         int cant = -1;
         try {
-            
             for (int i = 0; i < denominaciones.length; i++) {
                 if (Integer.parseInt(denominaciones[i]) == den) {
                     cant = i;
@@ -95,8 +94,8 @@ public class frmCajaRegistradora extends JFrame {
             if (cant != -1) {
                 int existencias = Integer.parseInt(txtExistencia.getText());
                 if (existencias > 0) {
-                    existencia[cant] += existencias;
-                    JOptionPane.showMessageDialog(null, "La cantidad de " + denominaciones[cant] + " ha sido actualizada a " + existencia[cant]);
+                    existencia[cant] = existencias;
+                    JOptionPane.showMessageDialog(null, "La cantidad de billetes ó monedas de: " + denominaciones[cant] + " ha sido actualizada a: " + existencia[cant]);
                 } else {
                     JOptionPane.showMessageDialog(null, "Error no se puede ingresar un numero negativo");
                     txtExistencia.setText("");
@@ -134,6 +133,10 @@ public class frmCajaRegistradora extends JFrame {
                 datos[contador][2] = String.valueOf(denominacion);
                 contador++;
             }
+        }
+        
+        if(valorDevolver > 0 ){
+            JOptionPane.showMessageDialog(null, "No hay suficientes billetes o monedas para devolver");
         }
 
         String[][] datosFinales = new String[contador][3];
